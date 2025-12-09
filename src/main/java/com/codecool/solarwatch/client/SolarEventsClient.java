@@ -7,10 +7,10 @@ import org.springframework.web.service.annotation.HttpExchange;
 
 import java.time.LocalDate;
 
-@HttpExchange(url = "https://api.sunrise-sunset.org/json")
+@HttpExchange(url = "https://api.sunrise-sunset.org")
 public interface SolarEventsClient {
 
-  @GetExchange("/")
+  @GetExchange("/json")
   SolarEventsResponse fetchSolarEvents(
           @RequestParam("lat") double lat,
           @RequestParam("lng") double lon,

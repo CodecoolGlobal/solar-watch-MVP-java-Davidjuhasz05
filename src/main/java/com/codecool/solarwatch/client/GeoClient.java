@@ -7,10 +7,10 @@ import org.springframework.web.service.annotation.HttpExchange;
 
 import java.util.List;
 
-@HttpExchange(url = "https://api.openweathermap.org/geo/1.0/direct")
+@HttpExchange(url = "https://api.openweathermap.org")
 public interface GeoClient {
 
-  @GetExchange("/")
+  @GetExchange("/geo/1.0/direct")
   List<CityCoordinates> fetchCoordinates(
           @RequestParam("q") String city,
           @RequestParam("limit") int limit,
