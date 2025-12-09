@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 
 ### OS & Logs ###
+.env
 .DS_Store
 Thumbs.db
 *.log
