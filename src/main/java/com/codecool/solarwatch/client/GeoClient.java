@@ -13,6 +13,7 @@ public interface GeoClient {
   @GetExchange("/")
   List<CityCoordinates> fetchCoordinates(
           @RequestParam("q") String city,
+          @RequestParam("limit") int limit,
           @RequestParam("appid") String apiKey
   );
 
