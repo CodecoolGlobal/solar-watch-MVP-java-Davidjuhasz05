@@ -4,6 +4,7 @@ import com.codecool.solarwatch.client.GeoClient;
 import com.codecool.solarwatch.client.SolarEventsClient;
 import com.codecool.solarwatch.client.response.CityCoordinates;
 import com.codecool.solarwatch.client.response.SolarEventsResponse;
+import com.codecool.solarwatch.exception.ResourceNotFoundException;
 import com.codecool.solarwatch.model.SolarEventsDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class SolarEventsService {
     List<CityCoordinates> geoResponse = geoClient.fetchCoordinates(city, 1, apiKey);
 
     if(geoResponse.isEmpty()) {
-      // throw new ResourceNotFoundException("City not found: " + city);
+      throw new ResourceNotFoundException("City not found: " + city);
     }
 
     CityCoordinates cityCoordinates = geoResponse.getFirst();
