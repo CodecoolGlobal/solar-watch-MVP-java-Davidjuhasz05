@@ -2,6 +2,7 @@ package com.codecool.solarwatch.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -12,35 +13,46 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException ex) {
+  public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException e) {
     ApiError error = new ApiError();
     error.setTimestamp(LocalDateTime.now());
     error.setStatus(HttpStatus.NOT_FOUND.value());
     error.setError(HttpStatus.NOT_FOUND.toString());
-    error.setMessage(ex.getMessage());
+    error.setMessage(e.getMessage());
 
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<ApiError> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+  public ResponseEntity<ApiError> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
     ApiError error = new ApiError();
     error.setTimestamp(LocalDateTime.now());
     error.setStatus(HttpStatus.BAD_REQUEST.value());
     error.setError(HttpStatus.BAD_REQUEST.toString());
 
-    if ("date".equals(ex.getName())) {
+    if ("date".equals(e.getName())) {
       error.setMessage("Invalid Date. Please use YYYY-MM-DD format.");
       return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    error.setMessage(ex.getMessage());
+    error.setMessage(e.getMessage());
+
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<ApiError> handleMissingRequestParam(MissingServletRequestParameterException e) {
+    ApiError error = new ApiError();
+    error.setTimestamp(LocalDateTime.now());
+    error.setStatus(HttpStatus.BAD_REQUEST.value());
+    error.setError(HttpStatus.BAD_REQUEST.toString());
+    error.setMessage("Missing parameter: " + e.getParameterName());
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ApiError> handleGlobalException(Exception ex) {
+  public ResponseEntity<ApiError> handleGlobalException(Exception e) {
     ApiError error = new ApiError();
     error.setTimestamp(LocalDateTime.now());
     error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
