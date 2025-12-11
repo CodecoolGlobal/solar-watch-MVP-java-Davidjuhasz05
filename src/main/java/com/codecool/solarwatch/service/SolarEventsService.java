@@ -6,6 +6,7 @@ import com.codecool.solarwatch.client.response.CityCoordinates;
 import com.codecool.solarwatch.client.response.SolarEventsResponse;
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
 import com.codecool.solarwatch.model.SolarEventsDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Slf4j
 public class SolarEventsService {
 
   @Value("${API_KEY}")
@@ -28,15 +30,51 @@ public class SolarEventsService {
   }
 
   public SolarEventsDTO getSolarEvents(@RequestParam String city, @RequestParam LocalDate date) {
-    List<CityCoordinates> geoResponse = geoClient.fetchCoordinates(city, 1, apiKey);
+    log.info("Starting solar event retrieval for city: '{}', date: {}", city, date);
+    log.debug("Resolving coordinates for city: '{}'", city);
+
+    List<CityCoordinates> geoResponse;
+
+    try {
+      long startTime = System.currentTimeMillis();
+
+      geoResponse = geoClient.fetchCoordinates(city, 1, apiKey);
+
+      long duration = System.currentTimeMillis() - startTime;
+      log.debug("Successfully retrieved coordinates from GeoClient in {} ms", duration);
+
+    } catch (Exception e) {
+      log.error("Failed to communicate with GeoClient for city: '{}'", city, e);
+      throw e;
+    }
 
     if(geoResponse.isEmpty()) {
+      log.warn("GeoClient returned zero results for city: '{}'. Throwing 404.", city);
       throw new ResourceNotFoundException("City not found: " + city);
     }
 
     CityCoordinates cityCoordinates = geoResponse.getFirst();
-    SolarEventsResponse response = solarEventsClient.fetchSolarEvents(cityCoordinates.lat(), cityCoordinates.lon(), date);
-    return mapToDTO(response, city);
+    log.debug("Resolved city: '{}' to Lat: {}, Lon: {}", city, cityCoordinates.lat(), cityCoordinates.lon());
+
+    try {
+      long startTime = System.currentTimeMillis();
+
+      SolarEventsResponse response = solarEventsClient.fetchSolarEvents(
+              cityCoordinates.lat(),
+              cityCoordinates.lon(),
+              date
+      );
+
+      long duration = System.currentTimeMillis() - startTime;
+      log.info("Successfully retrieved solar event data for city: '{}' in {} ms", city, duration);
+
+      return mapToDTO(response, city);
+
+    } catch (Exception e) {
+      log.error("Failed to communicate with SolarEventsClient for city: '{}', Lat: {}, Lon: {}",
+              city, cityCoordinates.lat(), cityCoordinates.lon(), e);
+      throw e;
+    }
 
   }
 
