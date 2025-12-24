@@ -68,7 +68,7 @@ public class SolarEventsService {
       long duration = System.currentTimeMillis() - startTime;
       log.info("Successfully retrieved solar event data for city: '{}' in {} ms", city, duration);
 
-      return mapToDTO(response, city);
+      return mapToDTO(response, city, date);
 
     } catch (Exception e) {
       log.error("Failed to communicate with SolarEventsClient for city: '{}', Lat: {}, Lon: {}",
@@ -78,9 +78,10 @@ public class SolarEventsService {
 
   }
 
-  private SolarEventsDTO mapToDTO(SolarEventsResponse response, String city) {
+  private SolarEventsDTO mapToDTO(SolarEventsResponse response, String city, LocalDate date) {
     return new SolarEventsDTO(
             city,
+            date,
             response.results().sunrise(),
             response.results().sunset(),
             response.tzid()
