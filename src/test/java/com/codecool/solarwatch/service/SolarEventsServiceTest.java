@@ -2,7 +2,7 @@ package com.codecool.solarwatch.service;
 
 import com.codecool.solarwatch.client.GeoClient;
 import com.codecool.solarwatch.client.SolarEventsClient;
-import com.codecool.solarwatch.client.response.CityCoordinates;
+import com.codecool.solarwatch.client.response.City;
 import com.codecool.solarwatch.client.response.SolarEventsResponse;
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
 import com.codecool.solarwatch.model.SolarEventsDTO;
@@ -34,19 +34,18 @@ class SolarEventsServiceTest {
 
   @Test
   void getSolarEvents_WhenCityExists_ReturnsDTO() {
-    String city = "London";
     LocalDate date = LocalDate.of(2025, 1, 1);
-    CityCoordinates mockCoordinates = new CityCoordinates(10.5, -1.24);
+    City mockCity = new City("London",10.5, -1.24, "GB", "England");
     SolarEventsResponse mockSolarRes = new SolarEventsResponse(
             new SolarEventsResponse.Results("6:00 AM", "8:00 PM"), "UTC");
 
-    when(geoClient.fetchCoordinates(eq(city), anyInt(), any()))
-            .thenReturn(List.of(mockCoordinates));
+    when(geoClient.fetchCityData(eq(mockCity.name()), anyInt(), any()))
+            .thenReturn(List.of(mockCity));
 
-    when(solarClient.fetchSolarEvents(mockCoordinates.lat(), mockCoordinates.lon(), date))
+    when(solarClient.fetchSolarEvents(mockCity.lat(), mockCity.lon(), date))
             .thenReturn(mockSolarRes);
 
-    SolarEventsDTO result = solarEventsService.getSolarEvents(city, date);
+    SolarEventsDTO result = solarEventsService.getSolarEvents(mockCity.name(), date);
 
     assertEquals("London", result.city());
     assertEquals("6:00 AM", result.sunrise());
@@ -59,7 +58,7 @@ class SolarEventsServiceTest {
     String city = "InvalidCity";
     LocalDate date = LocalDate.of(2025, 1, 1);
 
-    when(geoClient.fetchCoordinates(eq(city), anyInt(), any()))
+    when(geoClient.fetchCityData(eq(city), anyInt(), any()))
             .thenReturn(List.of());
 
     assertThrows(ResourceNotFoundException.class, () -> solarEventsService.getSolarEvents(city, date));

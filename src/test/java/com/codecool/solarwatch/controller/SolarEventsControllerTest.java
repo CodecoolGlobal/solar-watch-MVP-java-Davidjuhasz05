@@ -27,7 +27,7 @@ class SolarEventsControllerTest {
   void getSolarEvents_Returns200AndJson() throws Exception {
     String city = "Budapest";
     LocalDate date = LocalDate.of(2025, 1, 1);
-    SolarEventsDTO mockResponse = new SolarEventsDTO(city, date, "6:00 AM", "8:00 PM", "CEST");
+    SolarEventsDTO mockResponse = new SolarEventsDTO(city, "HU", "", date, "6:00 AM", "8:00 PM", "CEST");
 
     given(solarService.getSolarEvents(city, date)).willReturn(mockResponse);
 
