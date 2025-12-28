@@ -2,7 +2,7 @@ package com.codecool.solarwatch.service;
 
 import com.codecool.solarwatch.client.GeoClient;
 import com.codecool.solarwatch.client.SolarEventsClient;
-import com.codecool.solarwatch.client.response.City;
+import com.codecool.solarwatch.client.response.GeoResponse;
 import com.codecool.solarwatch.client.response.SolarEventsResponse;
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
 import com.codecool.solarwatch.model.SolarEventsDTO;
@@ -35,7 +35,7 @@ class SolarEventsServiceTest {
   @Test
   void getSolarEvents_WhenCityExists_ReturnsDTO() {
     LocalDate date = LocalDate.of(2025, 1, 1);
-    City mockCity = new City("London",10.5, -1.24, "GB", "England");
+    GeoResponse mockCity = new GeoResponse("London",10.5, -1.24, "GB", "England");
     SolarEventsResponse mockSolarRes = new SolarEventsResponse(
             new SolarEventsResponse.Results("6:00 AM", "8:00 PM"), "UTC");
 
