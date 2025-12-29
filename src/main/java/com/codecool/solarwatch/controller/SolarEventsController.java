@@ -29,7 +29,7 @@ public class SolarEventsController {
     SolarEventsDTO response = solarEventsService.getSolarEvents(city, date);
 
     long duration = System.currentTimeMillis() - startTime;
-    log.info("Successfully fetched sunrise/sunset details for city: '{}', date: {}, in {} ms", city, date, duration);
+    log.info("Successfully fetched sunrise/sunset details for city: '{}', date: {}, in {} ms", response.city(), date, duration);
 
     return response;
   }

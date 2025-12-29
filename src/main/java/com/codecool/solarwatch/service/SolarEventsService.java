@@ -43,7 +43,7 @@ public class SolarEventsService {
 
     City city;
 
-    var cityOptional = cityRepository.findByName(cityName);
+    var cityOptional = cityRepository.findByNameIgnoreCase(cityName);
     if (cityOptional.isPresent()) {
       log.info("City '{}' found in database. Cache HIT", cityName);
       city = cityOptional.get();
@@ -52,16 +52,16 @@ public class SolarEventsService {
       city = fetchAndSaveCity(cityName);
     }
 
-    log.debug("Checking database for solar event for '{}' on {}", date, cityName);
+    log.debug("Checking database for solar event for '{}' on {}", city.getName(), date);
 
     SolarEvent solarEvent;
 
     var solarOptional = solarEventRepository.findByCityAndDate(city, date);
     if (solarOptional.isPresent()) {
-      log.info("Solar events for '{}' on {} found in database. Cache HIT", cityName, date);
+      log.info("Solar events for '{}' on {} found in database. Cache HIT", city.getName(), date);
       solarEvent = solarOptional.get();
     } else {
-      log.info("Solar events for '{}' on {} not found in database. Cache MISS",  cityName, date);
+      log.info("Solar events for '{}' on {} not found in database. Cache MISS",  city.getName(), date);
       solarEvent = fetchAndSaveSolarEvents(city, date);
     }
 
@@ -74,13 +74,13 @@ public class SolarEventsService {
     List<GeoResponse> geoResponse;
 
     try {
-      log.debug("Resolving coordinates for city: '{}'", cityName);
+      log.debug("Resolving data for city: '{}'", cityName);
       long startTime = System.currentTimeMillis();
 
       geoResponse = geoClient.fetchCityData(cityName, 1, apiKey);
 
       long duration = System.currentTimeMillis() - startTime;
-      log.info("Successfully retrieved coordinates from GeoClient in {} ms", duration);
+      log.debug("GeoClient responded in {} ms", duration);
 
     } catch (Exception e) {
       log.error("Failed to communicate with GeoClient for city: '{}'", cityName, e);
@@ -93,7 +93,15 @@ public class SolarEventsService {
     }
 
     GeoResponse city = geoResponse.getFirst();
+    log.info("Successfully retrieved data from GeoClient for city: '{}'", city.name());
     log.debug("Resolved city: '{}' to Lat: {}, Lon: {}", city.name(), city.lat(), city.lon());
+
+    log.info("Double-checking database for city: '{}'", city.name());
+    var cityOptional = cityRepository.findByNameIgnoreCase(city.name());
+    if (cityOptional.isPresent()) {
+      log.info("City '{}' found in database. Returning existing entity", city.name());
+      return cityOptional.get();
+    }
 
     City newEntity = City.builder()
             .name(city.name())
@@ -103,7 +111,7 @@ public class SolarEventsService {
             .state(city.state())
             .build();
 
-    log.info("Saving city '{}' to database", cityName);
+    log.info("Saving city '{}' to database", city.name());
     return cityRepository.save(newEntity);
   }
 
