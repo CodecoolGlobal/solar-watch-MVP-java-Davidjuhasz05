@@ -2,6 +2,7 @@ package com.codecool.solarwatch.controller;
 
 import com.codecool.solarwatch.model.SolarEventsDTO;
 import com.codecool.solarwatch.service.SolarEventsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,13 +14,10 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("api")
 @Slf4j
+@RequiredArgsConstructor
 public class SolarEventsController {
 
   private final SolarEventsService solarEventsService;
-
-  public SolarEventsController(SolarEventsService solarEventsService) {
-    this.solarEventsService = solarEventsService;
-  }
 
   @GetMapping("/solarevents")
   public SolarEventsDTO getSolarEvents(@RequestParam String city, @RequestParam LocalDate date) {

@@ -10,6 +10,7 @@ import com.codecool.solarwatch.model.SolarEventsDTO;
 import com.codecool.solarwatch.model.SolarEvent;
 import com.codecool.solarwatch.repository.CityRepository;
 import com.codecool.solarwatch.repository.SolarEventRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SolarEventsService {
 
   @Value("${API_KEY}")
@@ -29,13 +31,6 @@ public class SolarEventsService {
   private final GeoClient geoClient;
   private final CityRepository cityRepository;
   private final SolarEventRepository solarEventRepository;
-
-  public SolarEventsService(SolarEventsClient solarEventsClient, GeoClient geoClient, CityRepository cityRepository, SolarEventRepository solarEventRepository) {
-    this.solarEventsClient = solarEventsClient;
-    this.geoClient = geoClient;
-    this.cityRepository = cityRepository;
-    this.solarEventRepository = solarEventRepository;
-  }
 
   public SolarEventsDTO getSolarEvents(@RequestParam String cityName, @RequestParam LocalDate date) {
     log.info("Starting solar event retrieval for city: '{}', date: {}", cityName, date);

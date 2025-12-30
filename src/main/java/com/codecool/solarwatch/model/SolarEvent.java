@@ -15,7 +15,6 @@ public class SolarEvent {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Setter(AccessLevel.NONE)
   private Long id;
 
   @ManyToOne
