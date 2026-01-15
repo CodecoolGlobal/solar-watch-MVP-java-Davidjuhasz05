@@ -40,8 +40,8 @@ public class SolarEventsService {
 
     var cityOptional = cityRepository.findByNameIgnoreCase(cityName);
     if (cityOptional.isPresent()) {
-      log.info("City '{}' found in database. Cache HIT", cityName);
       city = cityOptional.get();
+      log.info("City '{}' found in database. Cache HIT", city.getName());
     } else {
       log.info("City '{}' not found in database. Cache MISS", cityName);
       city = fetchAndSaveCity(cityName);
