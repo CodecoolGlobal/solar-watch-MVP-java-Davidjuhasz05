@@ -1,5 +1,8 @@
 package com.codecool.solarwatch.security;
 
+import com.codecool.solarwatch.security.jwt.AuthEntryPointJwt;
+import com.codecool.solarwatch.security.jwt.AuthTokenFilter;
+import com.codecool.solarwatch.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +36,7 @@ public class WebSecurityConfig {
   }
 
   public DaoAuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setUserDetailsService(userDetailsService);
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
     authProvider.setPasswordEncoder(passwordEncoder());
     return authProvider;
   }
