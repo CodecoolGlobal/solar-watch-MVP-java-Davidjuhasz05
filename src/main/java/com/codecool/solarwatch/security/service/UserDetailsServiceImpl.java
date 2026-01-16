@@ -1,7 +1,7 @@
 package com.codecool.solarwatch.security.service;
 
 import com.codecool.solarwatch.model.user.Role;
-import com.codecool.solarwatch.model.user.UserEntity;
+import com.codecool.solarwatch.model.user.SolarWatchUser;
 import com.codecool.solarwatch.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,15 +27,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username)
           throws UsernameNotFoundException {
-    UserEntity userEntity = userRepository.findByUsernameIgnoreCase(username)
+    SolarWatchUser user = userRepository.findByUsernameIgnoreCase(username)
             .orElseThrow(() -> new UsernameNotFoundException(username));
 
     List<SimpleGrantedAuthority> roles = new ArrayList<>();
-    for (Role role : userEntity.getRoles()) {
+    for (Role role : user.getRoles()) {
       roles.add(new SimpleGrantedAuthority(role.getRoleType().toString()));
     }
 
-    return new User(userEntity.getUsername(), userEntity.getPassword(), roles);
+    return new User(user.getUsername(), user.getPassword(), roles);
   }
 
 }

@@ -6,13 +6,12 @@ import lombok.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntity {
+public class SolarWatchUser {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
