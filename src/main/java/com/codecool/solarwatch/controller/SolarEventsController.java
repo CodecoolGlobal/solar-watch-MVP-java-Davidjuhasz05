@@ -1,6 +1,6 @@
 package com.codecool.solarwatch.controller;
 
-import com.codecool.solarwatch.model.SolarEventsDTO;
+import com.codecool.solarwatch.model.dto.SolarEventsDTO;
 import com.codecool.solarwatch.service.SolarEventsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
