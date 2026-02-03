@@ -7,7 +7,7 @@ import com.codecool.solarwatch.client.response.SolarEventsResponse;
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
 import com.codecool.solarwatch.model.City;
 import com.codecool.solarwatch.model.SolarEvent;
-import com.codecool.solarwatch.model.SolarEventsDTO;
+import com.codecool.solarwatch.model.dto.SolarEventsDTO;
 import com.codecool.solarwatch.repository.CityRepository;
 import com.codecool.solarwatch.repository.SolarEventRepository;
 import org.junit.jupiter.api.DisplayName;

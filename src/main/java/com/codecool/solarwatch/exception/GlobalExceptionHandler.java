@@ -18,11 +18,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException e) {
     log.warn(e.getMessage());
 
-    ApiError error = new ApiError();
-    error.setTimestamp(LocalDateTime.now());
-    error.setStatus(HttpStatus.NOT_FOUND.value());
-    error.setError(HttpStatus.NOT_FOUND.toString());
-    error.setMessage(e.getMessage());
+    ApiError error = ApiError.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error(HttpStatus.NOT_FOUND.toString())
+            .message(e.getMessage())
+            .build();
 
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
   }
@@ -32,10 +33,11 @@ public class GlobalExceptionHandler {
     log.warn("Parameter mismatch. Param: '{}', Value: '{}', Message: {}",
             e.getName(), e.getValue(), e.getMessage());
 
-    ApiError error = new ApiError();
-    error.setTimestamp(LocalDateTime.now());
-    error.setStatus(HttpStatus.BAD_REQUEST.value());
-    error.setError(HttpStatus.BAD_REQUEST.toString());
+    ApiError error = ApiError.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .error(HttpStatus.BAD_REQUEST.toString())
+            .build();
 
     if ("date".equals(e.getName())) {
       error.setMessage("Invalid Date. Please use YYYY-MM-DD format.");
@@ -50,24 +52,40 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiError> handleMissingRequestParam(MissingServletRequestParameterException e) {
     log.warn("Missing required parameter: '{}'", e.getParameterName());
 
-    ApiError error = new ApiError();
-    error.setTimestamp(LocalDateTime.now());
-    error.setStatus(HttpStatus.BAD_REQUEST.value());
-    error.setError(HttpStatus.BAD_REQUEST.toString());
-    error.setMessage("Missing parameter: " + e.getParameterName());
+    ApiError error = ApiError.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .error(HttpStatus.BAD_REQUEST.toString())
+            .message("Missing parameter: " + e.getParameterName())
+            .build();
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(UserExistsException.class)
+  public ResponseEntity<ApiError> handleUserExists(UserExistsException e) {
+    log.warn(e.getMessage());
+
+    ApiError error = ApiError.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.CONFLICT.value())
+            .error(HttpStatus.CONFLICT.toString())
+            .message(e.getMessage())
+            .build();
+
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiError> handleGlobalException(Exception e) {
     log.error("An unexpected internal server error occurred.", e);
 
-    ApiError error = new ApiError();
-    error.setTimestamp(LocalDateTime.now());
-    error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    error.setError(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-    error.setMessage("Something went wrong. Please try again.");
+    ApiError error = ApiError.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.toString())
+            .message("Something went wrong. Please try again.")
+            .build();
 
     return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
   }

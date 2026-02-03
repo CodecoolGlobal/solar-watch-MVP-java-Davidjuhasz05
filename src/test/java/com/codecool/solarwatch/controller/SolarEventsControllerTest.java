@@ -1,7 +1,7 @@
 package com.codecool.solarwatch.controller;
 
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
-import com.codecool.solarwatch.model.SolarEventsDTO;
+import com.codecool.solarwatch.model.dto.SolarEventsDTO;
 import com.codecool.solarwatch.service.SolarEventsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
