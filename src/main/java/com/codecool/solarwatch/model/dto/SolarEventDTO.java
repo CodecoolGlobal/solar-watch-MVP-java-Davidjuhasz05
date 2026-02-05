@@ -1,8 +1,12 @@
 package com.codecool.solarwatch.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 
-public record CreateSolarEventsDTO(
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record SolarEventDTO(
+        Long id,
         String city,
         String country,
         String state,
