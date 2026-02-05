@@ -1,11 +1,12 @@
 package com.codecool.solarwatch.service;
 
 import com.codecool.solarwatch.client.GeoClient;
-import com.codecool.solarwatch.client.SolarEventsClient;
+import com.codecool.solarwatch.client.SolarEventClient;
 import com.codecool.solarwatch.client.response.GeoResponse;
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
+import com.codecool.solarwatch.mapper.SolarEventMapper;
 import com.codecool.solarwatch.model.City;
-import com.codecool.solarwatch.client.response.SolarEventsResponse;
+import com.codecool.solarwatch.client.response.SolarEventResponse;
 import com.codecool.solarwatch.model.dto.SolarEventDTO;
 import com.codecool.solarwatch.model.SolarEvent;
 import com.codecool.solarwatch.repository.CityRepository;
@@ -26,10 +27,11 @@ public class SolarEventService {
   @Value("${API_KEY}")
   private String apiKey;
 
-  private final SolarEventsClient solarEventsClient;
+  private final SolarEventClient solarEventClient;
   private final GeoClient geoClient;
   private final CityRepository cityRepository;
   private final SolarEventRepository solarEventRepository;
+  private final SolarEventMapper solarEventMapper;
 
   public SolarEventDTO getSolarEvent(String cityName, LocalDate date) {
     log.info("Starting solar event retrieval for city: '{}', date: {}", cityName, date);
@@ -52,14 +54,14 @@ public class SolarEventService {
 
     var solarOptional = solarEventRepository.findByCityAndDate(city, date);
     if (solarOptional.isPresent()) {
-      log.info("Solar events for '{}' on {} found in database. Cache HIT", city.getName(), date);
+      log.info("Solar event for '{}' on {} found in database. Cache HIT", city.getName(), date);
       solarEvent = solarOptional.get();
     } else {
-      log.info("Solar events for '{}' on {} not found in database. Cache MISS",  city.getName(), date);
-      solarEvent = fetchAndSaveSolarEvents(city, date);
+      log.info("Solar event for '{}' on {} not found in database. Cache MISS",  city.getName(), date);
+      solarEvent = fetchAndSaveSolarEvent(city, date);
     }
 
-    return mapToDTO(solarEvent);
+    return solarEventMapper.toDTO(solarEvent);
   }
 
   private City fetchAndSaveCity(String cityName) {
@@ -109,16 +111,16 @@ public class SolarEventService {
     return cityRepository.save(newEntity);
   }
 
-  private SolarEvent fetchAndSaveSolarEvents(City city, LocalDate date) {
-    log.info("Solar events for '{}' on {} not found in database. Fetching from API...", city.getName(), date);
+  private SolarEvent fetchAndSaveSolarEvent(City city, LocalDate date) {
+    log.info("Solar event for '{}' on {} not found in database. Fetching from API...", city.getName(), date);
 
-    SolarEventsResponse response;
+    SolarEventResponse response;
 
     try {
-      log.debug("Fetching Solar events for city: '{}'", city.getName());
+      log.debug("Fetching Solar event for city: '{}'", city.getName());
       long startTime = System.currentTimeMillis();
 
-      response = solarEventsClient.fetchSolarEvents(
+      response = solarEventClient.fetchSolarEvent(
               city.getLatitude(),
               city.getLongitude(),
               date
@@ -128,7 +130,7 @@ public class SolarEventService {
       log.info("Successfully retrieved solar event data for city: '{}' in {} ms", city.getName(), duration);
 
     } catch (Exception e) {
-      log.error("Failed to communicate with SolarEventsClient for city: '{}', Lat: {}, Lon: {}",
+      log.error("Failed to communicate with SolarEventClient for city: '{}', Lat: {}, Lon: {}",
               city.getName(), city.getLatitude(), city.getLongitude(), e);
       throw e;
     }
@@ -141,21 +143,8 @@ public class SolarEventService {
             .timezone(response.tzid())
             .build();
 
-    log.info("Saving solar events for '{}' on {} to database", city.getName(), date);
+    log.info("Saving solar event for '{}' on {} to database", city.getName(), date);
     return solarEventRepository.save(newEntity);
-  }
-
-  private SolarEventDTO mapToDTO(SolarEvent entity) {
-    return new SolarEventDTO(
-            entity.getId(),
-            entity.getCity().getName(),
-            entity.getCity().getCountry(),
-            entity.getCity().getState(),
-            entity.getDate(),
-            entity.getSunrise(),
-            entity.getSunset(),
-            entity.getTimezone()
-    );
   }
 
 }

@@ -1,9 +1,9 @@
 package com.codecool.solarwatch.service;
 
 import com.codecool.solarwatch.client.GeoClient;
-import com.codecool.solarwatch.client.SolarEventsClient;
+import com.codecool.solarwatch.client.SolarEventClient;
 import com.codecool.solarwatch.client.response.GeoResponse;
-import com.codecool.solarwatch.client.response.SolarEventsResponse;
+import com.codecool.solarwatch.client.response.SolarEventResponse;
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
 import com.codecool.solarwatch.model.City;
 import com.codecool.solarwatch.model.SolarEvent;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 class SolarEventServiceTest {
 
   @Mock private GeoClient geoClient;
-  @Mock private SolarEventsClient solarClient;
+  @Mock private SolarEventClient solarClient;
   @Mock private CityRepository cityRepository;
   @Mock private SolarEventRepository solarEventRepository;
 
@@ -81,8 +81,8 @@ class SolarEventServiceTest {
   @DisplayName("Should fetch City and Event from API when cache misses completely")
   void getSolarEvent_FullCacheMiss() {
     GeoResponse geoResponse = new GeoResponse(CITY_NAME, 51.5, -0.1, "GB", "England");
-    SolarEventsResponse solarResponse = new SolarEventsResponse(
-            new SolarEventsResponse.Results("6:00 AM", "8:00 PM"), "UTC");
+    SolarEventResponse solarResponse = new SolarEventResponse(
+            new SolarEventResponse.Results("6:00 AM", "8:00 PM"), "UTC");
 
     when(cityRepository.findByNameIgnoreCase(CITY_NAME)).thenReturn(Optional.empty());
     when(geoClient.fetchCityData(eq(CITY_NAME), eq(1), any())).thenReturn(List.of(geoResponse));
@@ -92,7 +92,7 @@ class SolarEventServiceTest {
       return c;
     });
 
-    when(solarClient.fetchSolarEvents(51.5, -0.1, DATE)).thenReturn(solarResponse);
+    when(solarClient.fetchSolarEvent(51.5, -0.1, DATE)).thenReturn(solarResponse);
     when(solarEventRepository.save(any(SolarEvent.class))).thenAnswer(i -> i.getArguments()[0]);
 
     SolarEventDTO result = service.getSolarEvent(CITY_NAME, DATE);
@@ -106,12 +106,12 @@ class SolarEventServiceTest {
   @DisplayName("Should fetch Event from API when City exists but Event does not")
   void getSolarEvent_CityHit_EventMiss() {
     City city = new City(1L, CITY_NAME, 51.5, -0.1, "GB", "England", null);
-    SolarEventsResponse apiResponse = new SolarEventsResponse(
-            new SolarEventsResponse.Results("7:00 AM", "7:00 PM"), "UTC");
+    SolarEventResponse apiResponse = new SolarEventResponse(
+            new SolarEventResponse.Results("7:00 AM", "7:00 PM"), "UTC");
 
     when(cityRepository.findByNameIgnoreCase(CITY_NAME)).thenReturn(Optional.of(city));
     when(solarEventRepository.findByCityAndDate(city, DATE)).thenReturn(Optional.empty());
-    when(solarClient.fetchSolarEvents(city.getLatitude(), city.getLongitude(), DATE)).thenReturn(apiResponse);
+    when(solarClient.fetchSolarEvent(city.getLatitude(), city.getLongitude(), DATE)).thenReturn(apiResponse);
     when(solarEventRepository.save(any(SolarEvent.class))).thenAnswer(i -> i.getArguments()[0]);
 
     SolarEventDTO result = service.getSolarEvent(CITY_NAME, DATE);
