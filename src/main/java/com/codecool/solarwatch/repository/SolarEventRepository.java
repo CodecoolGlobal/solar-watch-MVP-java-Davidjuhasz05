@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface SolarEventRepository extends JpaRepository<SolarEvent, Long> {
   Optional<SolarEvent> findByCityAndDate(City city, LocalDate date);
+  boolean existsByCityNameAndDate(String city, LocalDate date);
 }

@@ -32,8 +32,8 @@ public class UserService {
   private final PasswordEncoder encoder;
 
   public void signUp(UserDTO user) {
-    if (userRepository.findByUsernameIgnoreCase(user.username()).isPresent()) {
-      throw new UserExistsException("A user already exists with this username: " + user.username());
+    if (userRepository.existsByUsernameIgnoreCase(user.username())) {
+      throw new UserExistsException(user.username());
     }
     String encodedPassword = encoder.encode(user.password());
     SolarWatchUser solarWatchUser = SolarWatchUser.builder()
