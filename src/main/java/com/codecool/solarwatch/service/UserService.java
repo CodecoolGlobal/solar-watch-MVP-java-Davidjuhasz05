@@ -2,7 +2,8 @@ package com.codecool.solarwatch.service;
 
 import com.codecool.solarwatch.exception.UserExistsException;
 import com.codecool.solarwatch.model.dto.JwtResponseDTO;
-import com.codecool.solarwatch.model.dto.UserDTO;
+import com.codecool.solarwatch.model.dto.UserAuthDTO;
+import com.codecool.solarwatch.model.dto.UserResponseDTO;
 import com.codecool.solarwatch.model.user.Role;
 import com.codecool.solarwatch.model.user.SolarWatchUser;
 import com.codecool.solarwatch.repository.UserRepository;
@@ -31,7 +32,7 @@ public class UserService {
   private final AuthenticationManager authManager;
   private final PasswordEncoder encoder;
 
-  public void signUp(UserDTO user) {
+  public UserResponseDTO signUp(UserAuthDTO user) {
     if (userRepository.existsByUsernameIgnoreCase(user.username())) {
       throw new UserExistsException(user.username());
     }
@@ -41,10 +42,12 @@ public class UserService {
             .password(encodedPassword)
             .roles(Set.of(Role.ROLE_USER))
             .build();
-    userRepository.save(solarWatchUser);
+    SolarWatchUser savedUser = userRepository.save(solarWatchUser);
+    Set<String> roles = solarWatchUser.getRoles().stream().map(Role::name).collect(Collectors.toSet());
+    return new UserResponseDTO(savedUser.getId(), savedUser.getUsername(), roles);
   }
 
-  public JwtResponseDTO login(UserDTO user) {
+  public JwtResponseDTO login(UserAuthDTO user) {
     Authentication auth = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(user.username(), user.password()));
     SecurityContextHolder.getContext().setAuthentication(auth);

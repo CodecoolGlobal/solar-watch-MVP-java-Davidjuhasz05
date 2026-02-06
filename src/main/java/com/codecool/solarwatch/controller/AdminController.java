@@ -7,10 +7,9 @@ import com.codecool.solarwatch.model.dto.SolarEventDTO;
 import com.codecool.solarwatch.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/admin")
@@ -21,13 +20,15 @@ public class AdminController {
   private final AdminService adminService;
 
   @PostMapping("/create/city")
-  public CityDTO createCity(@RequestBody CreateCityDTO city) {
-    return adminService.createCity(city);
+  public ResponseEntity<CityDTO> createCity(@RequestBody CreateCityDTO city) {
+    CityDTO cityDTO = adminService.createCity(city);
+    return ResponseEntity.status(HttpStatus.CREATED).body(cityDTO);
   }
 
   @PostMapping("/create/solarevent")
-  public SolarEventDTO createSolarEvent(@RequestBody CreateSolarEventDTO solarEvent) {
-    return adminService.createSolarEvent(solarEvent);
+  public ResponseEntity<SolarEventDTO> createSolarEvent(@RequestBody CreateSolarEventDTO solarEvent) {
+    SolarEventDTO solarEventDTO = adminService.createSolarEvent(solarEvent);
+    return ResponseEntity.status(HttpStatus.CREATED).body(solarEventDTO);
   }
 
 }
