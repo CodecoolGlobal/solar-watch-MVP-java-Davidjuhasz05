@@ -20,15 +20,27 @@ public class AdminController {
   private final AdminService adminService;
 
   @PostMapping("/create/city")
-  public ResponseEntity<CityDTO> createCity(@RequestBody CreateCityDTO city) {
-    CityDTO cityDTO = adminService.createCity(city);
-    return ResponseEntity.status(HttpStatus.CREATED).body(cityDTO);
+  public ResponseEntity<CityDTO> createCity(@RequestBody CreateCityDTO cityDTO) {
+    CityDTO city = adminService.createCity(cityDTO);
+    return ResponseEntity.status(HttpStatus.CREATED).body(city);
   }
 
   @PostMapping("/create/solarevent")
-  public ResponseEntity<SolarEventDTO> createSolarEvent(@RequestBody CreateSolarEventDTO solarEvent) {
-    SolarEventDTO solarEventDTO = adminService.createSolarEvent(solarEvent);
-    return ResponseEntity.status(HttpStatus.CREATED).body(solarEventDTO);
+  public ResponseEntity<SolarEventDTO> createSolarEvent(@RequestBody CreateSolarEventDTO solarEventDTO) {
+    SolarEventDTO solarEvent = adminService.createSolarEvent(solarEventDTO);
+    return ResponseEntity.status(HttpStatus.CREATED).body(solarEvent);
+  }
+
+  @PutMapping("/update/city/{id}")
+  public ResponseEntity<CityDTO> updateCity(@RequestBody CityDTO cityDTO, @PathVariable Long id) {
+    CityDTO city = adminService.updateCity(cityDTO, id);
+    return ResponseEntity.status(HttpStatus.OK).body(city);
+  }
+
+  @PutMapping("/update/solarevent/{id}")
+  public ResponseEntity<SolarEventDTO> updateSolarEvent(@RequestBody SolarEventDTO solarEventDTO, @PathVariable Long id) {
+    SolarEventDTO solarEvent = adminService.updateSolarEvent(solarEventDTO, id);
+    return ResponseEntity.status(HttpStatus.OK).body(solarEvent);
   }
 
 }
