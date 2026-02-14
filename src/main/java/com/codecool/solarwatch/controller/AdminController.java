@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping("/api/admin")
 @Slf4j
 @RequiredArgsConstructor
 public class AdminController {
@@ -31,13 +31,13 @@ public class AdminController {
     return ResponseEntity.status(HttpStatus.CREATED).body(solarEvent);
   }
 
-  @PutMapping("/update/city/{id}")
+  @PatchMapping("/update/city/{id}")
   public ResponseEntity<CityDTO> updateCity(@RequestBody CityDTO cityDTO, @PathVariable Long id) {
     CityDTO city = adminService.updateCity(cityDTO, id);
     return ResponseEntity.status(HttpStatus.OK).body(city);
   }
 
-  @PutMapping("/update/solarevent/{id}")
+  @PatchMapping("/update/solarevent/{id}")
   public ResponseEntity<SolarEventDTO> updateSolarEvent(@RequestBody SolarEventDTO solarEventDTO, @PathVariable Long id) {
     SolarEventDTO solarEvent = adminService.updateSolarEvent(solarEventDTO, id);
     return ResponseEntity.status(HttpStatus.OK).body(solarEvent);
