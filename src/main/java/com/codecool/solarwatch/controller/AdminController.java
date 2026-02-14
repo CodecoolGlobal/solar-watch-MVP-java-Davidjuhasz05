@@ -25,7 +25,7 @@ public class AdminController {
     return ResponseEntity.status(HttpStatus.CREATED).body(city);
   }
 
-  @PostMapping("/create/solarevent")
+  @PostMapping("/create/solar-event")
   public ResponseEntity<SolarEventDTO> createSolarEvent(@RequestBody CreateSolarEventDTO solarEventDTO) {
     SolarEventDTO solarEvent = adminService.createSolarEvent(solarEventDTO);
     return ResponseEntity.status(HttpStatus.CREATED).body(solarEvent);
@@ -37,10 +37,22 @@ public class AdminController {
     return ResponseEntity.status(HttpStatus.OK).body(city);
   }
 
-  @PatchMapping("/update/solarevent/{id}")
+  @PatchMapping("/update/solar-event/{id}")
   public ResponseEntity<SolarEventDTO> updateSolarEvent(@RequestBody SolarEventDTO solarEventDTO, @PathVariable Long id) {
     SolarEventDTO solarEvent = adminService.updateSolarEvent(solarEventDTO, id);
     return ResponseEntity.status(HttpStatus.OK).body(solarEvent);
+  }
+
+  @DeleteMapping("/delete/city/{id}")
+  public ResponseEntity<Void> deleteCity(@PathVariable Long id) {
+    adminService.deleteCity(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping("/delete/solar-event/{id}")
+  public ResponseEntity<Void> deleteSolarEvent(@PathVariable Long id) {
+    adminService.deleteSolarEvent(id);
+    return ResponseEntity.noContent().build();
   }
 
 }

@@ -19,7 +19,7 @@ public class SolarEventController {
 
   private final SolarEventService solarEventService;
 
-  @GetMapping("/solarevent")
+  @GetMapping("/solar-event")
   public SolarEventDTO getSolarEvent(@RequestParam String city, @RequestParam LocalDate date) {
     log.info("Incoming request to fetch sunrise/sunset details for city: '{}', date: {}", city, date);
     long startTime = System.currentTimeMillis();
