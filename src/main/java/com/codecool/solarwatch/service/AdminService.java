@@ -79,4 +79,18 @@ public class AdminService {
     return solarEventMapper.toDTO(savedSolarEvent);
   }
 
+  public void deleteCity(Long id) {
+    if (!cityRepository.existsById(id)) {
+      throw new ResourceNotFoundException(id.toString()); //
+    }
+    cityRepository.deleteById(id);
+  }
+
+  public void deleteSolarEvent(Long id) {
+    if (!solarEventRepository.existsById(id)) {
+      throw new ResourceNotFoundException(id.toString());
+    }
+    solarEventRepository.deleteById(id);
+  }
+
 }
