@@ -89,11 +89,11 @@
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Build the Backend
+- [x] Build the Backend
     - [x] Add Database Connection
     - [x] Dockerize Backend
     - [x] Implement Token-Based User Auth. with Spring Security (Login, Signup)
-    - [ ] Add Admin Role and CRUD Functionality
+    - [x] Add Admin Role and CRUD Functionality
 - [ ] Build the Frontend
     - [ ] Create Necessary Pages (Login/Signup, Home, Results)
     - [ ] Connect to Backend
