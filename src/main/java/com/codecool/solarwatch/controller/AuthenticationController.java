@@ -1,7 +1,8 @@
 package com.codecool.solarwatch.controller;
 
 import com.codecool.solarwatch.model.dto.JwtResponseDTO;
-import com.codecool.solarwatch.model.dto.UserDTO;
+import com.codecool.solarwatch.model.dto.UserAuthDTO;
+import com.codecool.solarwatch.model.dto.UserResponseDTO;
 import com.codecool.solarwatch.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @Slf4j
 @RequiredArgsConstructor
 public class AuthenticationController {
@@ -21,13 +22,13 @@ public class AuthenticationController {
   private final UserService userService;
 
   @PostMapping("/signup")
-  public ResponseEntity<Void> signUp(@RequestBody UserDTO user) {
-    userService.signUp(user);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+  public ResponseEntity<UserResponseDTO> signUp(@RequestBody UserAuthDTO user) {
+    UserResponseDTO savedUser = userService.signUp(user);
+    return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
   }
 
   @PostMapping("/login")
-  public JwtResponseDTO login(@RequestBody UserDTO user) {
+  public JwtResponseDTO login(@RequestBody UserAuthDTO user) {
     return userService.login(user);
   }
 

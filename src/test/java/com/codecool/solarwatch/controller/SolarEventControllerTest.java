@@ -1,8 +1,8 @@
 package com.codecool.solarwatch.controller;
 
 import com.codecool.solarwatch.exception.ResourceNotFoundException;
-import com.codecool.solarwatch.model.dto.SolarEventsDTO;
-import com.codecool.solarwatch.service.SolarEventsService;
+import com.codecool.solarwatch.model.dto.SolarEventDTO;
+import com.codecool.solarwatch.service.SolarEventService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +16,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(SolarEventsController.class)
-class SolarEventsControllerTest {
+@WebMvcTest(SolarEventController.class)
+class SolarEventControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockitoBean
-  private SolarEventsService solarService;
+  private SolarEventService solarService;
 
   @Test
   @DisplayName("GET /api/solarevents - Success")
-  void getSolarEvents_Success() throws Exception {
+  void getSolarEvent_Success() throws Exception {
     String city = "Budapest";
     String dateStr = "2023-10-05";
     LocalDate date = LocalDate.parse(dateStr);
-    SolarEventsDTO responseDto = new SolarEventsDTO(city, "HU", "Pest", date, "06:00", "18:00", "CET");
+    SolarEventDTO responseDto = new SolarEventDTO(city, "HU", "Pest", date, "06:00", "18:00", "CET");
 
-    given(solarService.getSolarEvents(city, date)).willReturn(responseDto);
+    given(solarService.getSolarEvent(city, date)).willReturn(responseDto);
 
     mockMvc.perform(get("/api/solarevents")
                     .param("city", city)
@@ -44,12 +44,12 @@ class SolarEventsControllerTest {
             .andExpect(jsonPath("$.sunrise").value("06:00"))
             .andExpect(jsonPath("$.sunset").value("18:00"));
 
-    verify(solarService).getSolarEvents(city, date);
+    verify(solarService).getSolarEvent(city, date);
   }
 
   @Test
   @DisplayName("GET /api/solarevents - Missing 'city' parameter should return 400")
-  void getSolarEvents_MissingCityParam() throws Exception {
+  void getSolarEvent_MissingCityParam() throws Exception {
     mockMvc.perform(get("/api/solarevents")
                     .param("date", "2023-10-05"))
             .andExpect(status().isBadRequest())
@@ -59,7 +59,7 @@ class SolarEventsControllerTest {
 
   @Test
   @DisplayName("GET /api/solarevents - Invalid Date Format should return 400 with custom message")
-  void getSolarEvents_InvalidDateFormat() throws Exception {
+  void getSolarEvent_InvalidDateFormat() throws Exception {
     mockMvc.perform(get("/api/solarevents")
                     .param("city", "London")
                     .param("date", "05-10-2023"))
@@ -69,28 +69,28 @@ class SolarEventsControllerTest {
 
   @Test
   @DisplayName("GET /api/solarevents - City Not Found should return 404")
-  void getSolarEvents_CityNotFound() throws Exception {
+  void getSolarEvent_CityNotFound() throws Exception {
     String city = "Narnia";
     LocalDate date = LocalDate.of(2023, 10, 5);
 
-    given(solarService.getSolarEvents(city, date))
-            .willThrow(new ResourceNotFoundException("City not found: " + city));
+    given(solarService.getSolarEvent(city, date))
+            .willThrow(new ResourceNotFoundException(city));
 
     mockMvc.perform(get("/api/solarevents")
                     .param("city", city)
                     .param("date", "2023-10-05"))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value(404))
-            .andExpect(jsonPath("$.message").value("City not found: Narnia"));
+            .andExpect(jsonPath("$.message").value("City not found: 'Narnia'"));
   }
 
   @Test
   @DisplayName("GET /api/solarevents - Internal Server Error should return 500")
-  void getSolarEvents_InternalServerError() throws Exception {
+  void getSolarEvent_InternalServerError() throws Exception {
     String city = "Paris";
     LocalDate date = LocalDate.of(2023, 10, 5);
 
-    given(solarService.getSolarEvents(city, date))
+    given(solarService.getSolarEvent(city, date))
             .willThrow(new RuntimeException("Database connection failed"));
 
     mockMvc.perform(get("/api/solarevents")
