@@ -11,8 +11,11 @@ import com.codecool.solarwatch.model.dto.CityDTO;
 import com.codecool.solarwatch.model.dto.CreateCityDTO;
 import com.codecool.solarwatch.model.dto.CreateSolarEventDTO;
 import com.codecool.solarwatch.model.dto.SolarEventDTO;
+import com.codecool.solarwatch.model.user.Role;
+import com.codecool.solarwatch.model.user.SolarWatchUser;
 import com.codecool.solarwatch.repository.CityRepository;
 import com.codecool.solarwatch.repository.SolarEventRepository;
+import com.codecool.solarwatch.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class AdminService {
   private final CityRepository cityRepository;
   private final CityMapper cityMapper;
   private final SolarEventMapper solarEventMapper;
+  private final UserRepository userRepository;
 
   public CityDTO createCity(CreateCityDTO cityDTO) {
     if (cityRepository.existsByName(cityDTO.name())) {
@@ -91,6 +95,13 @@ public class AdminService {
       throw new ResourceNotFoundException(id.toString());
     }
     solarEventRepository.deleteById(id);
+  }
+
+  public void changeRole(String username, Role newRole) {
+    SolarWatchUser user = userRepository.findByUsernameIgnoreCase(username)
+            .orElseThrow(() -> new ResourceNotFoundException(username));
+    user.getRoles().add(newRole);
+    userRepository.save(user);
   }
 
 }

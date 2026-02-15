@@ -4,6 +4,7 @@ import com.codecool.solarwatch.model.dto.CityDTO;
 import com.codecool.solarwatch.model.dto.CreateCityDTO;
 import com.codecool.solarwatch.model.dto.CreateSolarEventDTO;
 import com.codecool.solarwatch.model.dto.SolarEventDTO;
+import com.codecool.solarwatch.model.user.Role;
 import com.codecool.solarwatch.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,12 @@ public class AdminController {
   public ResponseEntity<Void> deleteSolarEvent(@PathVariable Long id) {
     adminService.deleteSolarEvent(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/promote/{username}")
+  public ResponseEntity<Void> promoteUserToAdmin(@PathVariable String username) {
+    adminService.changeRole(username, Role.ROLE_ADMIN);
+    return ResponseEntity.ok().build();
   }
 
 }
