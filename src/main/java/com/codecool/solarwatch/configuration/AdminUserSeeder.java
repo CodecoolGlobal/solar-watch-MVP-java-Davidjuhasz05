@@ -20,10 +20,10 @@ public class AdminUserSeeder implements CommandLineRunner {
   private final UserRepository userRepository;
   private final PasswordEncoder encoder;
 
-  @Value("${solarwatch.admin.username:admin}")
+  @Value("${solarwatch.admin.username}")
   private String adminUsername;
 
-  @Value("${solarwatch.admin.password:admin}")
+  @Value("${solarwatch.admin.password}")
   private String adminPassword;
 
   @Override
